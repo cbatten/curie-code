@@ -14,10 +14,10 @@ int pin_led2         = 5;
 int pin_bump_right   = 6;
 int pin_bump_left    = 7;
 
-int pin_motorA_speed = 3;
-int pin_motorB_speed = 11;
-int pin_motorA_dir   = 12;
-int pin_motorB_dir   = 13;
+int pin_motorL_speed = 3;
+int pin_motorR_speed = 11;
+int pin_motorL_dir   = 12;
+int pin_motorR_dir   = 13;
 
 // Analog Pins
 
@@ -37,10 +37,10 @@ void setup()
   pinMode( pin_bump_right,    INPUT  );
   pinMode( pin_bump_left,     INPUT  );
 
-  pinMode( pin_motorA_dir,    OUTPUT );
-  pinMode( pin_motorB_dir,    OUTPUT );
-  pinMode( pin_motorA_speed,  OUTPUT );
-  pinMode( pin_motorB_speed,  OUTPUT );
+  pinMode( pin_motorL_dir,    OUTPUT );
+  pinMode( pin_motorR_dir,    OUTPUT );
+  pinMode( pin_motorL_speed,  OUTPUT );
+  pinMode( pin_motorR_speed,  OUTPUT );
 
   // Makes the input button have a pull-up resistor
 
@@ -48,10 +48,10 @@ void setup()
 
   // Motors are initially turning forward but with zero speed
 
-  digitalWrite( pin_motorA_dir, LOW );
-  digitalWrite( pin_motorB_dir, LOW );
-  analogWrite( pin_motorA_speed, 0 );
-  analogWrite( pin_motorB_speed, 0 );
+  digitalWrite( pin_motorL_dir, LOW );
+  digitalWrite( pin_motorR_dir, LOW );
+  analogWrite( pin_motorL_speed, 0 );
+  analogWrite( pin_motorR_speed, 0 );
 
   // Initialize serial communications at 9600 bps
 
