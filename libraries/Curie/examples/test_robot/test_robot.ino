@@ -18,10 +18,10 @@ int pin_led2             = 5;
 int pin_bump_right       = 6;
 int pin_bump_left        = 7;
 
-int pin_motorA_speed     = 3;
-int pin_motorB_speed     = 11;
-int pin_motorA_dir       = 12;
-int pin_motorB_dir       = 13;
+int pin_motor_left_speed     = 3;
+int pin_motor_right_speed     = 11;
+int pin_motor_left_dir       = 12;
+int pin_motor_right_dir       = 13;
 
 // Analog Pins
 
@@ -114,66 +114,66 @@ void test_drive_motors()
 {
   // Left drive motor
 
-  digitalWrite( pin_motorA_dir,  LOW );
-  analogWrite( pin_motorA_speed, 100 );
+  digitalWrite( pin_motor_left_dir,  LOW );
+  analogWrite( pin_motor_left_speed, 100 );
   TEST_PROMPT_YN("Is left drive motor rotating forward?");
 
-  digitalWrite( pin_motorA_dir,  LOW );
-  analogWrite( pin_motorA_speed, 200 );
+  digitalWrite( pin_motor_left_dir,  LOW );
+  analogWrite( pin_motor_left_speed, 200 );
   TEST_PROMPT_YN("Did left drive motor speed increase?");
 
-  digitalWrite( pin_motorA_dir,  HIGH );
-  analogWrite( pin_motorA_speed, 100  );
+  digitalWrite( pin_motor_left_dir,  HIGH );
+  analogWrite( pin_motor_left_speed, 100  );
   TEST_PROMPT_YN("Is left drive motor rotating backward?");
 
-  digitalWrite( pin_motorA_dir,  HIGH );
-  analogWrite( pin_motorA_speed, 200  );
+  digitalWrite( pin_motor_left_dir,  HIGH );
+  analogWrite( pin_motor_left_speed, 200  );
   TEST_PROMPT_YN("Did left drive motor speed increase?");
 
-  digitalWrite( pin_motorA_dir,  LOW );
-  analogWrite( pin_motorA_speed, 0   );
+  digitalWrite( pin_motor_left_dir,  LOW );
+  analogWrite( pin_motor_left_speed, 0   );
   TEST_PROMPT_YN("Did the left drive motor stop?");
 
   // Right drive motor
 
-  digitalWrite( pin_motorB_dir,  LOW );
-  analogWrite( pin_motorB_speed, 100 );
+  digitalWrite( pin_motor_right_dir,  LOW );
+  analogWrite( pin_motor_right_speed, 100 );
   TEST_PROMPT_YN("Is right drive motor rotating forward?");
 
-  digitalWrite( pin_motorB_dir,  LOW );
-  analogWrite( pin_motorB_speed, 200 );
+  digitalWrite( pin_motor_right_dir,  LOW );
+  analogWrite( pin_motor_right_speed, 200 );
   TEST_PROMPT_YN("Did right drive motor speed increase?");
 
-  digitalWrite( pin_motorB_dir,  HIGH );
-  analogWrite( pin_motorB_speed, 100  );
+  digitalWrite( pin_motor_right_dir,  HIGH );
+  analogWrite( pin_motor_right_speed, 100  );
   TEST_PROMPT_YN("Is right drive motor rotating backward?");
 
-  digitalWrite( pin_motorB_dir,  HIGH );
-  analogWrite( pin_motorB_speed, 200  );
+  digitalWrite( pin_motor_right_dir,  HIGH );
+  analogWrite( pin_motor_right_speed, 200  );
   TEST_PROMPT_YN("Did right drive motor speed increase?");
 
-  digitalWrite( pin_motorB_dir,  LOW );
-  analogWrite( pin_motorB_speed, 0   );
+  digitalWrite( pin_motor_right_dir,  LOW );
+  analogWrite( pin_motor_right_speed, 0   );
   TEST_PROMPT_YN("Did the right drive motor stop?");
 
   // Both motors
 
-  digitalWrite( pin_motorA_dir,  LOW );
-  analogWrite( pin_motorA_speed, 100 );
-  digitalWrite( pin_motorB_dir,  LOW );
-  analogWrite( pin_motorB_speed, 100 );
+  digitalWrite( pin_motor_left_dir,  LOW );
+  analogWrite( pin_motor_left_speed, 100 );
+  digitalWrite( pin_motor_right_dir,  LOW );
+  analogWrite( pin_motor_right_speed, 100 );
   TEST_PROMPT_YN("Are both drive motors rotating forward?");
 
-  digitalWrite( pin_motorA_dir,  HIGH );
-  analogWrite( pin_motorA_speed, 100 );
-  digitalWrite( pin_motorB_dir,  HIGH );
-  analogWrite( pin_motorB_speed, 100 );
+  digitalWrite( pin_motor_left_dir,  HIGH );
+  analogWrite( pin_motor_left_speed, 100 );
+  digitalWrite( pin_motor_right_dir,  HIGH );
+  analogWrite( pin_motor_right_speed, 100 );
   TEST_PROMPT_YN("Are both drive motors rotating backward?");
 
-  digitalWrite( pin_motorB_dir,  LOW );
-  analogWrite( pin_motorB_speed, 0   );
-  digitalWrite( pin_motorA_dir,  LOW );
-  analogWrite( pin_motorA_speed, 0   );
+  digitalWrite( pin_motor_right_dir,  LOW );
+  analogWrite( pin_motor_right_speed, 0   );
+  digitalWrite( pin_motor_left_dir,  LOW );
+  analogWrite( pin_motor_left_speed, 0   );
   TEST_PROMPT_YN("Are both drive motors stopped?");
 }
 
@@ -205,10 +205,10 @@ void setup()
   pinMode( pin_bump_left,     INPUT  );
   pinMode( pin_bump_right,    INPUT  );
 
-  pinMode( pin_motorA_speed,  OUTPUT );
-  pinMode( pin_motorB_speed,  OUTPUT );
-  pinMode( pin_motorA_dir,    OUTPUT );
-  pinMode( pin_motorB_dir,    OUTPUT );
+  pinMode( pin_motor_left_speed,  OUTPUT );
+  pinMode( pin_motor_right_speed,  OUTPUT );
+  pinMode( pin_motor_left_dir,    OUTPUT );
+  pinMode( pin_motor_right_dir,    OUTPUT );
 
   // Makes the input button have a pull-up resistor
 
@@ -216,10 +216,10 @@ void setup()
 
   // Motors are initially turning forward but with zero speed
 
-  digitalWrite( pin_motorA_dir, LOW );
-  digitalWrite( pin_motorB_dir, LOW );
-  analogWrite( pin_motorA_speed, 0 );
-  analogWrite( pin_motorB_speed, 0 );
+  digitalWrite( pin_motor_left_dir, LOW );
+  digitalWrite( pin_motor_right_dir, LOW );
+  analogWrite( pin_motor_left_speed, 0 );
+  analogWrite( pin_motor_right_speed, 0 );
 
   // Setup tests
 
