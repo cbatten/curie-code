@@ -8,22 +8,22 @@
 
 // Digital Pins
 
-int pin_button       = 2;
-int pin_led1         = 4;
-int pin_led2         = 5;
-int pin_bump_right   = 6;
-int pin_bump_left    = 7;
+int pin_button            = 2;
+int pin_led1              = 4;
+int pin_led2              = 5;
+int pin_bump_right        = 6;
+int pin_bump_left         = 7;
 
-int pin_motorL_speed = 3;
-int pin_motorR_speed = 11;
-int pin_motorL_dir   = 12;
-int pin_motorR_dir   = 13;
+int pin_motor_left_speed  = 3;
+int pin_motor_right_speed = 11;
+int pin_motor_left_dir    = 12;
+int pin_motor_right_dir   = 13;
 
 // Analog Pins
 
-int pin_potentiometer    = A5;
-int pin_grayscale_sensor = A4;
-int pin_infrared_sensor  = A3;
+int pin_potentiometer     = A5;
+int pin_grayscale_sensor  = A4;
+int pin_infrared_sensor   = A3;
 
 //------------------------------------------------------------------------
 // Setup: runs once after reset
@@ -31,16 +31,16 @@ int pin_infrared_sensor  = A3;
 
 void setup()
 {
-  pinMode( pin_button,        INPUT  );
-  pinMode( pin_led1,          OUTPUT );
-  pinMode( pin_led2,          OUTPUT );
-  pinMode( pin_bump_right,    INPUT  );
-  pinMode( pin_bump_left,     INPUT  );
+  pinMode( pin_button,            INPUT  );
+  pinMode( pin_led1,              OUTPUT );
+  pinMode( pin_led2,              OUTPUT );
+  pinMode( pin_bump_right,        INPUT  );
+  pinMode( pin_bump_left,         INPUT  );
 
-  pinMode( pin_motorL_dir,    OUTPUT );
-  pinMode( pin_motorR_dir,    OUTPUT );
-  pinMode( pin_motorL_speed,  OUTPUT );
-  pinMode( pin_motorR_speed,  OUTPUT );
+  pinMode( pin_motor_left_dir,    OUTPUT );
+  pinMode( pin_motor_right_dir,   OUTPUT );
+  pinMode( pin_motor_left_speed,  OUTPUT );
+  pinMode( pin_motor_right_speed, OUTPUT );
 
   // Makes the input button have a pull-up resistor
 
@@ -48,10 +48,11 @@ void setup()
 
   // Motors are initially turning forward but with zero speed
 
-  digitalWrite( pin_motorL_dir, LOW );
-  digitalWrite( pin_motorR_dir, LOW );
-  analogWrite( pin_motorL_speed, 0 );
-  analogWrite( pin_motorR_speed, 0 );
+  digitalWrite( pin_motor_left_dir,  LOW );
+  digitalWrite( pin_motor_right_dir, LOW );
+
+  analogWrite( pin_motor_left_speed,  0 );
+  analogWrite( pin_motor_right_speed, 0 );
 
   // Initialize serial communications at 9600 bps
 
@@ -73,4 +74,3 @@ void loop() {
   // ... your code goes here ...
 
 }
-

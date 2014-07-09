@@ -12,22 +12,22 @@
 
 // Digital Pins
 
-int pin_button           = 2;
-int pin_led1             = 4;
-int pin_led2             = 5;
-int pin_bump_right       = 6;
-int pin_bump_left        = 7;
+int pin_button            = 2;
+int pin_led1              = 4;
+int pin_led2              = 5;
+int pin_bump_right        = 6;
+int pin_bump_left         = 7;
 
-int pin_motor_left_speed     = 3;
-int pin_motor_right_speed     = 11;
-int pin_motor_left_dir       = 12;
-int pin_motor_right_dir       = 13;
+int pin_motor_left_speed  = 3;
+int pin_motor_right_speed = 11;
+int pin_motor_left_dir    = 12;
+int pin_motor_right_dir   = 13;
 
 // Analog Pins
 
-int pin_potentiometer    = A5;
-int pin_grayscale_sensor = A4;
-int pin_infrared_sensor  = A3;
+int pin_potentiometer     = A5;
+int pin_grayscale_sensor  = A4;
+int pin_infrared_sensor   = A3;
 
 //------------------------------------------------------------------------
 // test_leds
@@ -64,14 +64,35 @@ void test_button()
 //------------------------------------------------------------------------
 // test_potentiometer
 //------------------------------------------------------------------------
+// The small and large potentiometers have opposite relationships between
+// which way they turn and how the resistance changes.
 
 void test_potentiometer()
 {
-  TEST_PROMPT_WAIT("Turn pot completely clockwise");
-  TEST_CHECK( analogRead( pin_potentiometer ) > 250 );
+  Serial.print(F("     [ prompt ] Does this robot have a small or large pot? [s/l]"));
+  while ( !Serial.available() ) {
+    delay(100);
+  }
+  byte answer = Serial.read();
 
-  TEST_PROMPT_WAIT("Turn pot completely counterclockwise");
-  TEST_CHECK( analogRead( pin_potentiometer ) < 5 );
+  if ( (answer == 'S') || (answer == 's') ) {
+
+    TEST_PROMPT_WAIT("Turn pot completely clockwise");
+    TEST_CHECK( analogRead( pin_potentiometer ) > 250 );
+
+    TEST_PROMPT_WAIT("Turn pot completely counterclockwise");
+    TEST_CHECK( analogRead( pin_potentiometer ) < 5 );
+
+  }
+  else {
+
+    TEST_PROMPT_WAIT("Turn pot completely counterclockwise");
+    TEST_CHECK( analogRead( pin_potentiometer ) > 250 );
+
+    TEST_PROMPT_WAIT("Turn pot completely clockwise");
+    TEST_CHECK( analogRead( pin_potentiometer ) < 5 );
+
+  }
 }
 
 //------------------------------------------------------------------------
