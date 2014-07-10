@@ -17,6 +17,7 @@
 #include <CurieLCD.h>
 #include <CurieWifi.h>
 #include <CurieCloud.h>
+#include <CuriePiezo.h>
 
 #endif /* CURIE_H */
 
