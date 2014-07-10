@@ -5,7 +5,6 @@
 #include <CurieCloud.h>
 #include <CurieWifi.h>
 #include <Arduino.h>
-#include <MemoryFree.h>
 
 // Global instance
 
@@ -163,7 +162,6 @@ int CurieCloud::recv_int( const char* name )
   // Send the request
 
   CURIE_CLOUD_DEBUG("2. send req");
-  Serial.println(freeMemory());
 
   client.send_request(F("GET /v2/feeds/"));
   client.send_request(m_feed_id);
