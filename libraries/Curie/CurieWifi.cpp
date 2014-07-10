@@ -81,38 +81,43 @@ uint8_t g_SPIspeed;
 // processors.
 
 static const uint8_t g_int2irq[] = {
-#if defined(__AVR_ATmega168__) || defined(__AVR_ATmega328P__) || defined (__AVR_ATmega328__) || defined(__AVR_ATmega8__)
-   2, 0,
-   3, 1,
-#elif defined(__AVR_ATmega1281__) || defined(__AVR_ATmega2561__) || defined(__AVR_ATmega2560__) || defined(__AVR_ATmega1280__)
-   2, 0,
-   3, 1,
-  21, 2,
-  20, 3,
-  19, 4,
-  18, 5,
-#elif  defined(__AVR_ATmega32U4__) && defined(CORE_TEENSY)
-   5, 0,
-   6, 1,
-   7, 2,
-   8, 3,
-#elif  defined(__AVR_AT90USB1286__) && defined(CORE_TEENSY)
-   0, 0,
-   1, 1,
-   2, 2,
-   3, 3,
-  36, 4,
-  37, 5,
-  18, 6,
-  19, 7,
-#elif  defined(__AVR_ATmega32U4__)
-   7, 4,
-   3, 0,
-   2, 1,
-   0, 2,
-   1, 3,
-#endif
+  2, 0,
+  3, 1,
 };
+
+// static const uint8_t g_int2irq[] = {
+// #if defined(__AVR_ATmega168__) || defined(__AVR_ATmega328P__) || defined (__AVR_ATmega328__) || defined(__AVR_ATmega8__)
+//    2, 0,
+//    3, 1,
+// #elif defined(__AVR_ATmega1281__) || defined(__AVR_ATmega2561__) || defined(__AVR_ATmega2560__) || defined(__AVR_ATmega1280__)
+//    2, 0,
+//    3, 1,
+//   21, 2,
+//   20, 3,
+//   19, 4,
+//   18, 5,
+// #elif  defined(__AVR_ATmega32U4__) && defined(CORE_TEENSY)
+//    5, 0,
+//    6, 1,
+//    7, 2,
+//    8, 3,
+// #elif  defined(__AVR_AT90USB1286__) && defined(CORE_TEENSY)
+//    0, 0,
+//    1, 1,
+//    2, 2,
+//    3, 3,
+//   36, 4,
+//   37, 5,
+//   18, 6,
+//   19, 7,
+// #elif  defined(__AVR_ATmega32U4__)
+//    7, 4,
+//    3, 0,
+//    2, 1,
+//    0, 2,
+//    1, 3,
+// #endif
+// };
 
 //------------------------------------------------------------------------
 // event_callback
