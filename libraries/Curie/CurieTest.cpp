@@ -4,6 +4,7 @@
 
 #include <CurieTest.h>
 #include <CurieLCD.h>
+// #include <MemoryFree.h>
 
 //------------------------------------------------------------------------
 // Global Variables
@@ -49,8 +50,8 @@ void CurieTest::auto_begin()
 
 void CurieTest::add( const __FlashStringHelper* name, void (*func_ptr)() )
 {
-  if ( m_num_test_cases == 32 ) {
-    Serial.println("ERROR: Added too many test cases!");
+  if ( m_num_test_cases == 16 ) {
+    Serial.println(F("ERROR: Added too many test cases!"));
     while (1);
   }
 
@@ -114,7 +115,13 @@ void CurieTest::run()
 
       // Run the test case
 
+      // Serial.print(F("free mem: "));
+      // Serial.println(freeMemory());
+
       m_test_case_func_ptrs[i]();
+
+      // Serial.print(F("free mem: "));
+      // Serial.println(freeMemory());
 
     }
   }

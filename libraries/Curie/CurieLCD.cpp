@@ -52,6 +52,8 @@ CurieLCD::CurieLCD()
   m_data_pins[1] = 4;  // really d5
   m_data_pins[2] = 5;  // really d6
   m_data_pins[3] = 6;  // really d7
+
+  m_initialized = false;
 }
 
 //------------------------------------------------------------------------
@@ -60,6 +62,8 @@ CurieLCD::CurieLCD()
 
 void CurieLCD::begin()
 {
+  if ( m_initialized )
+    return;
 
   uint8_t lines   = 2;
   uint8_t dotsize = LCD_5x8DOTS;
@@ -163,6 +167,8 @@ void CurieLCD::begin()
   // set the entry mode
 
   command( LCD_ENTRYMODESET | m_displaymode );
+
+  m_initialized = true;
 }
 
 //------------------------------------------------------------------------

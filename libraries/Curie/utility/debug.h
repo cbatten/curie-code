@@ -28,16 +28,6 @@
 typedef char PROGMEM prog_char;
 #endif
 
-//------------------------------------------------------------------------
-// F() workaround
-//------------------------------------------------------------------------
-// Workaround for http://gcc.gnu.org/bugzilla/show_bug.cgi?id=34734
-
-#ifdef PROGMEM
-#undef PROGMEM
-#define PROGMEM __attribute__((section(".progmem.data")))
-#endif
-
 #ifndef _CC3000_DEBUG
 #define _CC3000_DEBUG
 

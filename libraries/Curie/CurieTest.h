@@ -9,16 +9,6 @@
 #include <Arduino.h>
 
 //------------------------------------------------------------------------
-// F() workaround
-//------------------------------------------------------------------------
-// Workaround for http://gcc.gnu.org/bugzilla/show_bug.cgi?id=34734
-
-#ifdef PROGMEM
-#undef PROGMEM
-#define PROGMEM __attribute__((section(".progmem.data")))
-#endif
-
-//------------------------------------------------------------------------
 // Global Variables
 //------------------------------------------------------------------------
 
@@ -57,11 +47,11 @@ class CurieTest {
  private:
 
   String                     m_test_suite_name;
-  int                        m_num_test_cases;
-  const __FlashStringHelper* m_test_case_names[32];
+  uint8_t                    m_num_test_cases;
+  const __FlashStringHelper* m_test_case_names[16];
 
   typedef void (*TestFuncPtr)();
-  TestFuncPtr                m_test_case_func_ptrs[32];
+  TestFuncPtr                m_test_case_func_ptrs[16];
 
 };
 

@@ -130,7 +130,7 @@ void event_callback( long lEventType, char* data, unsigned char length )
 
   if ( lEventType == HCI_EVNT_WLAN_UNSOL_CONNECT )
     g_have_connection = 1;
-  
+
   // if ( lEventType == HCI_EVNT_WLAN_UNSOL_DISCONNECT )
   //   cc3000Bitset.reset(CC3000BitSet::IsConnected | CC3000BitSet::HasDHCP);
 
@@ -410,7 +410,7 @@ CurieWifiClient::CurieWifiClient( uint8_t ip_a, uint8_t ip_b, uint8_t ip_c, uint
   socket_addr.sa_data[5] = ip_d;
 
   int err = connect( m_socket, &socket_addr, sizeof(socket_addr) );
-  CURIE_WIFI_ASSERT( err != -1,   "socket conn. " );
+  CURIE_WIFI_ASSERT( err != -1,     "socket conn. " );
   CURIE_WIFI_ASSERT( m_socket >= 0, "socket conn. " );
 }
 
@@ -447,7 +447,6 @@ void CurieWifiClient::send_request( const String& str )
 // CurieWifiClient::send_request
 //------------------------------------------------------------------------
 
-const char PROGMEM* pgm_ptr;
 void CurieWifiClient::send_request( const __FlashStringHelper* str )
 {
   char      tx_buf[CURIE_WIFI_TX_BUF_SIZE];
@@ -455,9 +454,9 @@ void CurieWifiClient::send_request( const __FlashStringHelper* str )
 
   // Send data CURIE_WIFI_TX_BUF_SIZE bytes at a time
 
-  pgm_ptr = (const char*) str;
+  const char PROGMEM *p = (const char PROGMEM*) str;
 
-  for ( uint8_t c; (c = pgm_read_byte(pgm_ptr)); pgm_ptr++ ) {
+  for ( uint8_t c; (c = pgm_read_byte(p)); p++ ) {
     tx_buf[tx_buf_idx] = (char) c;
     tx_buf_idx++;
     if ( tx_buf_idx == CURIE_WIFI_TX_BUF_SIZE ) {

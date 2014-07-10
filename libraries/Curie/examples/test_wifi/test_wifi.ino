@@ -26,6 +26,7 @@ void test_connect()
 void test_print_resp()
 {
   CurieWifiClient client( 128,84,224,10 );
+
   TEST_PASS( "Successfully connected to server" );
 
   client.send_request(F(
@@ -54,6 +55,7 @@ void test_recv_csl()
     "Host: www.csl.cornell.edu\n"
     "Connection: close\n\n"
   ));
+
   TEST_PASS( "Successfully sent request" );
 
   char buf[32];
@@ -86,123 +88,6 @@ void test_recv_csl_with_delim()
 }
 
 //------------------------------------------------------------------------
-// test_recv_xively
-//------------------------------------------------------------------------
-// Test getting data from xively.
-
-void test_recv_xively()
-{
-  CurieWifiClient client( 64,94,18,120 );
-  TEST_PASS( "Successfully connected to server" );
-
-  client.send_request(F(
-    "GET /v2/feeds/324666390/datastreams/always_42.csv HTTP/1.1\n"
-    "Host: api.xively.edu\n"
-    "X-ApiKey: Dmk0kNcXz4bCxSPUW6ODyLFZSZYrslX09dw7Jf2WD4FA6HDk\n"
-    "Connection: close\n\n"
-  ));
-  TEST_PASS( "Successfully sent request" );
-
-  char buf[32];
-  client.recv_response_data( buf, 32, ',' );
-  TEST_PASS( "Successfully received response" );
-  TEST_CHECK( strcmp( buf, "42" ) == 0 );
-}
-
-//------------------------------------------------------------------------
-// test_send_xively
-//------------------------------------------------------------------------
-// Test sending/receiving data to xively.
-
-void test_send_xively()
-{
-  CurieWifiClient client0( 64,94,18,120 );
-  TEST_PASS( "Successfully connected to server" );
-
-  // First set value to one
-
-  client0.send_request(F(
-    "PUT /v2/feeds/324666390.csv HTTP/1.1\n"
-    "Host: api.xively.edu\n"
-    "X-ApiKey: Dmk0kNcXz4bCxSPUW6ODyLFZSZYrslX09dw7Jf2WD4FA6HDk\n"
-    "Content-Length: 14\n"
-    "Connection: close\n\n"
-    "test_channel,1\n"
-  ));
-  TEST_PASS( "Successfully sent request" );
-
-  delay(1000);
-
-  client0.recv_response();
-  TEST_PASS( "Successfully received response" );
-
-  delay(1000);
-
-  // Check that the value is indeed set to one
-
-  CurieWifiClient client1( 64,94,18,120 );
-  TEST_PASS( "Successfully connected to server" );
-
-  client1.send_request(F(
-    "GET /v2/feeds/324666390/datastreams/test_channel.csv HTTP/1.1\n"
-    "Host: api.xively.edu\n"
-    "X-ApiKey: Dmk0kNcXz4bCxSPUW6ODyLFZSZYrslX09dw7Jf2WD4FA6HDk\n"
-    "Connection: close\n\n"
-  ));
-  TEST_PASS( "Successfully sent request" );
-
-  delay(1000);
-
-  char buf[32];
-  client1.recv_response_data( buf, 32, ',' );
-  TEST_PASS( "Successfully received response" );
-  TEST_CHECK( strcmp( buf, "1" ) == 0 );
-
-  delay(1000);
-
-  // Now set data back to zero
-
-  CurieWifiClient client2( 64,94,18,120 );
-  TEST_PASS( "Successfully connected to server" );
-
-  client2.send_request(F(
-    "PUT /v2/feeds/324666390.csv HTTP/1.1\n"
-    "Host: api.xively.edu\n"
-    "X-ApiKey: Dmk0kNcXz4bCxSPUW6ODyLFZSZYrslX09dw7Jf2WD4FA6HDk\n"
-    "Content-Length: 14\n"
-    "Connection: close\n\n"
-    "test_channel,0\n"
-  ));
-  TEST_PASS( "Successfully sent request" );
-
-  delay(1000);
-
-  client2.recv_response();
-  TEST_PASS( "Successfully received response" );
-
-  delay(1000);
-
-  // Check that the value is indeed set back to zero
-
-  CurieWifiClient client3( 64,94,18,120 );
-  TEST_PASS( "Successfully connected to server" );
-
-  client3.send_request(F(
-    "GET /v2/feeds/324666390/datastreams/test_channel.csv HTTP/1.1\n"
-    "Host: api.xively.edu\n"
-    "X-ApiKey: Dmk0kNcXz4bCxSPUW6ODyLFZSZYrslX09dw7Jf2WD4FA6HDk\n"
-    "Connection: close\n\n"
-  ));
-  TEST_PASS( "Successfully sent request" );
-
-  delay(1000);
-
-  client3.recv_response_data( buf, 32, ',' );
-  TEST_PASS( "Successfully received response" );
-  TEST_CHECK( strcmp( buf, "0" ) == 0 );
-}
-
-//------------------------------------------------------------------------
 // test_disconnect
 //------------------------------------------------------------------------
 // Test disconnecting from access point.
@@ -229,8 +114,6 @@ void setup()
   tests.add( TEST_CASE( test_print_resp          ) );
   tests.add( TEST_CASE( test_recv_csl            ) );
   tests.add( TEST_CASE( test_recv_csl_with_delim ) );
-  tests.add( TEST_CASE( test_recv_xively         ) );
-  tests.add( TEST_CASE( test_send_xively         ) );
   tests.add( TEST_CASE( test_disconnect          ) );
 }
 
@@ -242,4 +125,3 @@ void loop()
 {
   tests.run();
 }
-
