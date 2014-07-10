@@ -130,7 +130,7 @@ class CurieLCD : public Print
   uint8_t m_i2cAddr;
   Adafruit_MCP23008 m_i2c;
 
-  uint8_t m_initialized;
+  bool m_initialized;
 };
 
 // Global instance

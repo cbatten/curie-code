@@ -281,6 +281,7 @@ void CurieWifi::begin()
   // It worked!
 
   CURIE_WIFI_DEBUG("Success!");
+  m_initialized = true;
 }
 
 //------------------------------------------------------------------------
@@ -377,7 +378,6 @@ void CurieWifi::connect( const __FlashStringHelper* ssid )
 
   CURIE_WIFI_ASSERT( timer > 0, "dhcp timeout " );
   CURIE_WIFI_DEBUG("Connected!");
-  m_initialized = true;
 }
 
 //------------------------------------------------------------------------
