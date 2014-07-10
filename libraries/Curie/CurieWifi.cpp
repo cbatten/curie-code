@@ -182,11 +182,17 @@ void scan_ssids( uint32_t time )
 
 CurieWifi::CurieWifi()
 {
-  // These are for the default wiring we use in CURIE
+  // This is the old pin out, but it uses up three PWM outputs
 
-  g_csPin   = 10;
-  g_irqPin  = 3;
-  g_vbatPin = 5;
+  // g_csPin   = 10;
+  // g_irqPin  = 3;
+  // g_vbatPin = 5;
+
+  // This is our new pinout which frees up those three PWM outputs
+
+  g_csPin   = 8;
+  g_irqPin  = 2;
+  g_vbatPin = 4;
 
   g_IRQnum  = 0xff;
 
