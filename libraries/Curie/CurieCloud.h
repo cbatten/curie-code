@@ -66,8 +66,8 @@ class CurieCloud
   // Receive data from a Xively channel
 
   int recv_int( const char* name );
-  // float  recv_float( const char* name );
-  // String recv_str( const char* name );
+  float  recv_float( const char* name );
+  String recv_str( const char* name );
 
  private:
 

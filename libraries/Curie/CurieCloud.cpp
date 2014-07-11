@@ -166,7 +166,28 @@ void CurieCloud::send_str( const char* name, const String& value)
 // CurieCloud::recv_int
 //------------------------------------------------------------------------
 
-int CurieCloud::recv_int( const char* name )
+int CurieCloud::recv_int( const char* name)
+{
+   return CurieCloud::recv_str(name).toInt();
+}
+
+//------------------------------------------------------------------------
+// CurieCloud::recv_float
+//------------------------------------------------------------------------
+
+float CurieCloud::recv_float( const char* name )
+{
+    String val = CurieCloud::recv_str(name);
+    char buf[32];
+    val.toCharArray(buf,32); 
+    return atof(buf);
+}
+
+//------------------------------------------------------------------------
+// CurieCloud::recv_str
+//------------------------------------------------------------------------
+
+String CurieCloud::recv_str( const char* name )
 {
   if ( !m_initialized ) {
     Serial.println(F("\nERROR: Must call begin on curie_cloud first!"));
@@ -207,13 +228,10 @@ int CurieCloud::recv_int( const char* name )
 
   //int value = String(buf).toInt();
 
-  int value = atoi(buf);
-
-
   // Success!
 
   CURIE_CLOUD_DEBUG("Done!");
 
-  return value;
+  return String(buf);
 }
 
