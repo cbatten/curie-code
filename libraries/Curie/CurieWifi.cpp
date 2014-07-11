@@ -408,7 +408,7 @@ CurieWifiClient::CurieWifiClient( uint8_t ip_a, uint8_t ip_b, uint8_t ip_c, uint
   
     m_socket = socket( AF_INET, SOCK_STREAM, IPPROTO_TCP );
     //Failed in creating socket, restart wifi module and try again 
-    while(m_socket < 0){
+    for(int c = 0; c < 4 && m_socket < 0; ++c){
         Serial.println("Restarting wifi because of socket create");
         curie_wifi.begin();
         curie_wifi.connect(F("RedRover"));            
@@ -431,16 +431,13 @@ CurieWifiClient::CurieWifiClient( uint8_t ip_a, uint8_t ip_b, uint8_t ip_c, uint
     int err = connect( m_socket, &socket_addr, sizeof(socket_addr) );
 
     //Failed in connecting, will restart the wifi module
-    while(err == -1){
+    for(int c = 0; c < 4 && err == -1; ++c){
         Serial.println("Restarting wifi, failed to connect");                
         curie_wifi.begin();
         curie_wifi.connect(F("RedRover"));
         err = connect( m_socket, &socket_addr, sizeof(socket_addr) );                
     }
-
-    
   
-
   CURIE_WIFI_ASSERT( err != -1,     "socket conn. " );
   CURIE_WIFI_ASSERT( m_socket >= 0, "socket conn. " );
 }
@@ -462,7 +459,7 @@ void CurieWifiClient::send_request( const String& str )
     if ( tx_buf_idx == CURIE_WIFI_TX_BUF_SIZE ) {
       int err = send( m_socket, tx_buf, CURIE_WIFI_TX_BUF_SIZE, 0 );
       //Failed to send, restart wifi module and try again
-      while(err == -1){
+      for(int c = 0; c < 4 && err == -1; ++c){
         Serial.println("Restarting wifi, failed to send");                
         curie_wifi.begin();
         curie_wifi.connect(F("RedRover"));
@@ -478,7 +475,7 @@ void CurieWifiClient::send_request( const String& str )
   if ( tx_buf_idx > 0 ) {
     int err = send( m_socket, tx_buf, tx_buf_idx, 0 );
     //Failed to send, restart wifi module and try again
-    while(err == -1){
+    for(int c = 0; c < 4 && err == -1; ++c){
       Serial.println("Restarting wifi, failed to send");                
       curie_wifi.begin();
       curie_wifi.connect(F("RedRover"));
@@ -506,7 +503,7 @@ void CurieWifiClient::send_request( const __FlashStringHelper* str )
     tx_buf_idx++;
     if ( tx_buf_idx == CURIE_WIFI_TX_BUF_SIZE ) {
       int err = send( m_socket, tx_buf, CURIE_WIFI_TX_BUF_SIZE, 0 );
-      while(err == -1){
+      for(int c = 0;c < 4 && err == -1; ++c){
         Serial.println("Restarting wifi, failed to send");                
         curie_wifi.begin();
         curie_wifi.connect(F("RedRover"));
@@ -521,7 +518,7 @@ void CurieWifiClient::send_request( const __FlashStringHelper* str )
 
   if ( tx_buf_idx > 0 ) {
     int err = send( m_socket, tx_buf, tx_buf_idx, 0 );
-    while(err == -1){
+    for(int c = 0; c < 4 && err == -1; ++c){
         Serial.println("Restarting wifi, failed to send");                
         curie_wifi.begin();
         curie_wifi.connect(F("RedRover"));
