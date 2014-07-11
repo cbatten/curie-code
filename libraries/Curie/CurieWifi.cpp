@@ -408,7 +408,7 @@ CurieWifiClient::CurieWifiClient( uint8_t ip_a, uint8_t ip_b, uint8_t ip_c, uint
   
     m_socket = socket( AF_INET, SOCK_STREAM, IPPROTO_TCP );
     //Failed in creating socket, restart wifi module and try again 
-    while(m_socket < 0)          
+    while(m_socket < 0){
         Serial.println("Restarting wifi because of socket create");
         curie_wifi.begin();
         curie_wifi.connect(F("RedRover"));            
@@ -439,7 +439,7 @@ CurieWifiClient::CurieWifiClient( uint8_t ip_a, uint8_t ip_b, uint8_t ip_c, uint
     }
 
     
-  }
+  
 
   CURIE_WIFI_ASSERT( err != -1,     "socket conn. " );
   CURIE_WIFI_ASSERT( m_socket >= 0, "socket conn. " );
