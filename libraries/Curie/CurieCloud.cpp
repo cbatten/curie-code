@@ -91,6 +91,27 @@ void CurieCloud::begin( const __FlashStringHelper* feed_id,
 
 void CurieCloud::send_int( const char* name, int value )
 {
+    CurieCloud::send_str(name,String(value));
+}
+
+//------------------------------------------------------------------------
+// CurieCloud::send_float
+//------------------------------------------------------------------------
+
+void CurieCloud::send_float( const char* name, float value )
+{
+    char buf[32];
+    dtostrf(value,4,2,buf);
+    CurieCloud::send_str(name,buf);
+}
+
+
+//------------------------------------------------------------------------
+// CurieCloud::send_str
+//------------------------------------------------------------------------
+
+void CurieCloud::send_str( const char* name, const String& value)
+{
   if ( !m_initialized ) {
     Serial.println(F("\nERROR: Must call begin on curie_cloud first!"));
     while (1);
@@ -119,7 +140,7 @@ void CurieCloud::send_int( const char* name, int value )
   data.reserve(32);
   data = name;
   data += ",";
-  data += String(value);
+  data += value;
   data += "\n";
 
   String data_len_str;

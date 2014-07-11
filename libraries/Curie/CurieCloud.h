@@ -60,8 +60,8 @@ class CurieCloud
   // Send data to a Xively channel
 
   void send_int( const char* name, int value );
-  // void send_float( const char* name, float value );
-  // void send_str( const char* name, const String& value );
+  void send_float( const char* name, float value );
+  void send_str( const char* name, const String& value );
 
   // Receive data from a Xively channel
 
