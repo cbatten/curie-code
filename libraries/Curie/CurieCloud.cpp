@@ -5,6 +5,7 @@
 #include <CurieCloud.h>
 #include <CurieWifi.h>
 #include <Arduino.h>
+#include <stdlib.h>
 
 // Global instance
 
@@ -204,7 +205,10 @@ int CurieCloud::recv_int( const char* name )
 
   CURIE_CLOUD_DEBUG("4. parse resp");
 
-  int value = String(buf).toInt();
+  //int value = String(buf).toInt();
+
+  int value = atoi(buf);
+
 
   // Success!
 
