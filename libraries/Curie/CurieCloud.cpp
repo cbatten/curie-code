@@ -6,6 +6,7 @@
 #include <CurieWifi.h>
 #include <Arduino.h>
 #include <stdlib.h>
+#include <MemoryFree.h>
 
 // Global instance
 
@@ -137,6 +138,7 @@ void CurieCloud::send_str( const char* name, const String& value)
   client.send_request(m_api_key);
   client.send_request(F("\nConnection: close\nContent-Length: "));
 
+//Serial.println("Send chunk 1");
   String data;
   data.reserve(32);
   data = name;
@@ -150,7 +152,7 @@ void CurieCloud::send_str( const char* name, const String& value)
   data_len_str += "\n\n";
 
   client.send_request( data_len_str + data );
-
+//Serial.println("Send chunk 2");
   // Wait for the reponse
 
   CURIE_CLOUD_DEBUG("3. wait for resp");

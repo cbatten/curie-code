@@ -30,6 +30,9 @@ class CurieWifi {
 
   void begin();
 
+  // Re-initializes the wifi board
+  void reInit();
+
   // Connect to an open access point
 
   void connect( const __FlashStringHelper* ssid );
@@ -41,6 +44,12 @@ class CurieWifi {
   // Disconnect from open access point
 
   void disconnect();
+
+  //Checks to see if wifi is still connected  
+  bool isConnected();
+
+  //Checks to see if the socket is open
+  bool isSocketOpen();
 
  private:
 
@@ -60,8 +69,15 @@ class CurieWifiClient {
 
   CurieWifiClient( uint8_t ip_a, uint8_t ip_b, uint8_t ip_c, uint8_t ip_d );
 
-  // Send a request to the server
 
+  //Attemps to create a socket
+  void createSocket();
+
+  //Checks to make sure internet is connected and socket is open
+  //Will try and fix any issues
+  void verifyConnection();
+
+  // Send a request to the server
   void send_request( const String& str );
   void send_request( const __FlashStringHelper* str );
 
