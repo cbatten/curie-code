@@ -20,7 +20,6 @@ full_robot/
 full_robot2/
 ir_wall_follow_robot/
 libraries/Adafruit_CC3000/
-libraries/LiquidCrystal/
 libraries/readme.txt
 light_sensor/
 simple_robot/
