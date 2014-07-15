@@ -80,7 +80,7 @@ void CurieCloud::begin( const __FlashStringHelper* feed_id,
     return;
 
   curie_wifi.begin();
-  curie_wifi.connect(F("RedRover"));
+  curie_wifi.connect(CURIESSID);
 
   m_feed_id     = feed_id;
   m_api_key     = api_key;

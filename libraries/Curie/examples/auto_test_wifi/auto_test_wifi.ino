@@ -14,8 +14,8 @@
 
 void test_connect()
 {
-  curie_wifi.connect(F("RedRover"));
-  TEST_PASS( "Successfully connected to RedRover" );
+  curie_wifi.connect(CURIESSID);
+  TEST_PASS( "Successfully connected" );
 }
 
 //------------------------------------------------------------------------
@@ -94,7 +94,7 @@ void test_disconnect()
 {
   delay(2000);
   curie_wifi.disconnect();
-  TEST_PASS( "Successfully discconnected from RedRover" );
+  TEST_PASS( "Successfully discconnected" );
 }
 
 //------------------------------------------------------------------------

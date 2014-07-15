@@ -230,7 +230,7 @@ CurieTest tests("test_wifi");
 void setup()
 {
   curie_wifi.begin();
-  curie_wifi.connect(F("RedRover"));
+  curie_wifi.connect(CURIESSID);
 
   tests.begin();
   tests.add( TEST_CASE( test_recv          ) );

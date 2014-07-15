@@ -341,7 +341,7 @@ void CurieWifi::print_mac_addr()
 // CurieWifi::connect
 //------------------------------------------------------------------------
 
-void CurieWifi::connect( const __FlashStringHelper* ssid )
+void CurieWifi::connect( const char* ssid )
 {
   CURIE_WIFI_DEBUG_HEADER("Connect to AP");
 
@@ -364,11 +364,12 @@ void CurieWifi::connect( const __FlashStringHelper* ssid )
   // when the connection is established, and that callback will set the
   // g_have_connection and g_have_ip variables.
 
-  CURIE_WIFI_DEBUG("3. start connect");
+  CURIE_WIFI_DEBUG("3. start connect to ");
 
+ 
   g_have_connection = 0;
   g_have_ip         = 0;
-  int err = wlan_connect( "RedRover", 8 );
+  int err = wlan_connect(ssid,strlen(ssid));
 
   CURIE_WIFI_ASSERT( err == 0, "no connect" );
 
@@ -460,7 +461,7 @@ CurieWifiClient::CurieWifiClient( uint8_t ip_a, uint8_t ip_b, uint8_t ip_c, uint
         Serial.println(F("Restarting wifi, failed to connect"));
         curie_wifi.disconnect();
         curie_wifi.reInit();
-        curie_wifi.connect(F("RedRover"));
+        curie_wifi.connect(CURIESSID);
         err = connect( m_socket, &socket_addr, sizeof(socket_addr) );                
     }*/
   
@@ -477,7 +478,7 @@ void CurieWifiClient::createSocket(){
     for(int c = 0; c < 4 && m_socket < 0; ++c){
         //Serial.println(F("Restarting wifi because of socket create"));
         //curie_wifi.begin();
-        //curie_wifi.connect(F("RedRover"));            
+        //curie_wifi.connect(F(CURIE2014));            
         Serial.print(F("Retrying to create socket: Try #")); Serial.println(c);
         m_socket = socket( AF_INET, SOCK_STREAM, IPPROTO_TCP ); 
     }
@@ -500,7 +501,7 @@ void CurieWifiClient::verifyConnection(){
     if(!curie_wifi.isConnected()){
       Serial.println("Lost Internet! \n");
       curie_wifi.disconnect();
-      curie_wifi.connect(F("RedRover"));
+      curie_wifi.connect(CURIESSID);
     }
 
     //If the socket is still not open or the board is still
@@ -508,7 +509,7 @@ void CurieWifiClient::verifyConnection(){
     if(!curie_wifi.isSocketOpen() || !curie_wifi.isConnected()){
       curie_wifi.disconnect();
       curie_wifi.reInit();
-      curie_wifi.connect(F("RedRover"));
+      curie_wifi.connect(CURIESSID);
       createSocket();
       CURIE_WIFI_ASSERT(curie_wifi.isSocketOpen(), "socket conn. ");
       CURIE_WIFI_ASSERT(curie_wifi.isConnected(),  "internet conn.");
