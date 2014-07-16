@@ -6,7 +6,7 @@
 #include <CurieWifi.h>
 #include <Arduino.h>
 #include <stdlib.h>
-#include <MemoryFree.h>
+// #include <MemoryFree.h>
 
 // Global instance
 
