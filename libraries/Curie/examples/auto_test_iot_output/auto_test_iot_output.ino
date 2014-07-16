@@ -12,6 +12,7 @@
 //------------------------------------------------------------------------
 
 int pin_led = 3;
+int times_passed = 0;
 
 //------------------------------------------------------------------------
 // Setup
@@ -31,7 +32,6 @@ void setup()
   // Initial output to LCD
 
   curie_lcd.clear();
-  curie_lcd.print("Door Status: 0");
 }
 
 //------------------------------------------------------------------------
@@ -46,15 +46,14 @@ void loop()
   curie_lcd.print("checking cloud");
 
   int door_status = curie_cloud.recv_int( "door_status" );
-
+  ++times_passed;
   curie_lcd.setCursor(0,1);
   curie_lcd.print("              ");
 
   // Update the LCD
-
   curie_lcd.setCursor(0,0);
-  curie_lcd.print("Door Status: ");
-  curie_lcd.print(door_status);
+  curie_lcd.print("# Success: ");
+  curie_lcd.print(times_passed);
 
   // Update the LED
 
@@ -67,4 +66,3 @@ void loop()
 
   delay(4000);
 }
-
