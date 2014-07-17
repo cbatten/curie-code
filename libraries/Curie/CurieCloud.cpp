@@ -94,7 +94,7 @@ void CurieCloud::begin( const __FlashStringHelper* feed_id,
 
 void CurieCloud::send_int( const char* name, int value )
 {
-    CurieCloud::send_str(name,String(value));
+  CurieCloud::send_str(name,String(value));
 }
 
 //------------------------------------------------------------------------
@@ -103,9 +103,9 @@ void CurieCloud::send_int( const char* name, int value )
 
 void CurieCloud::send_float( const char* name, float value )
 {
-    char buf[32];
-    dtostrf(value,4,2,buf);
-    CurieCloud::send_str(name,buf);
+  char buf[32];
+  dtostrf(value,4,2,buf);
+  CurieCloud::send_str(name,buf);
 }
 
 
@@ -163,6 +163,22 @@ void CurieCloud::send_str( const char* name, const String& value)
   // Success!
 
   CURIE_CLOUD_DEBUG("Done!");
+}
+
+//------------------------------------------------------------------------
+// CurieCloud::send_multiple
+//------------------------------------------------------------------------
+
+void CurieCloud::send_multiple(
+  const char* name0, const String& value0,
+  const char* name1, const String& value1,
+  const char* name2, const String& value2,
+  const char* name3, const String& value3 )
+{
+  CurieCloud::send_str(name0,value0);
+  CurieCloud::send_str(name1,value1);
+  CurieCloud::send_str(name2,value2);
+  CurieCloud::send_str(name3,value3);
 }
 
 //------------------------------------------------------------------------

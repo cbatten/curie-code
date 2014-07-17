@@ -34,6 +34,33 @@ void test_send()
 }
 
 //------------------------------------------------------------------------
+// test_send_multiple
+//------------------------------------------------------------------------
+// Test sending data to cloud.
+
+void test_send_multiple()
+{
+  curie_cloud.send_multiple(
+    "test_channel_a", String(1),
+    "test_channel_b", String(2),
+    "test_channel_c", String(3),
+    "test_channel_d", String(4)
+  );
+
+  int value1 = curie_cloud.recv_int( "test_channel_a" );
+  TEST_CHECK( value1 == 1 );
+
+  int value2 = curie_cloud.recv_int( "test_channel_b" );
+  TEST_CHECK( value2 == 2 );
+
+  int value3 = curie_cloud.recv_int( "test_channel_c" );
+  TEST_CHECK( value3 == 3 );
+
+  int value4 = curie_cloud.recv_int( "test_channel_d" );
+  TEST_CHECK( value4 == 4 );
+}
+
+//------------------------------------------------------------------------
 // Setup
 //------------------------------------------------------------------------
 
@@ -46,6 +73,7 @@ void setup()
   tests.begin();
   tests.add( TEST_CASE( test_recv          ) );
   tests.add( TEST_CASE( test_send          ) );
+  tests.add( TEST_CASE( test_send_multiple ) );
 }
 
 //------------------------------------------------------------------------

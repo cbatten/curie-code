@@ -104,6 +104,11 @@ class CurieCloud
   void send_float( const char* name, float value );
   void send_str( const char* name, const String& value );
 
+  void send_multiple( const char* name0,      const String& value0,
+                      const char* name1 = "", const String& value1 = "",
+                      const char* name2 = "", const String& value2 = "",
+                      const char* name3 = "", const String& value3 = "" );
+
   // Receive data from a Xively channel
 
   int recv_int( const char* name );

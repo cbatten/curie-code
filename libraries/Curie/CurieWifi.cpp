@@ -132,48 +132,36 @@ uint8_t g_socket_open;     // callback sets to 0 if the socket is closed
 void event_callback( long lEventType, char* data, unsigned char length )
 {
 
-   if ( lEventType == HCI_EVNT_WLAN_ASYNC_SIMPLE_CONFIG_DONE ){
-     //cc3000Bitset.set(CC3000BitSet::IsSmartConfigFinished);
-     Serial.println(F("Event 1 \n"));
-   }
+   // if ( lEventType == HCI_EVNT_WLAN_ASYNC_SIMPLE_CONFIG_DONE ){
+   //   //cc3000Bitset.set(CC3000BitSet::IsSmartConfigFinished);
+   //   Serial.println(F("Event 1 \n"));
+   // }
 
-  if ( lEventType == HCI_EVNT_WLAN_UNSOL_CONNECT )
-    g_have_connection = 1;
+   if ( lEventType == HCI_EVNT_WLAN_UNSOL_CONNECT )
+     g_have_connection = 1;
 
-   if ( lEventType == HCI_EVNT_WLAN_UNSOL_DISCONNECT ){
-      Serial.println(F("Disconnected from internet"));
-      g_have_connection = 0;
-  }
+   if ( lEventType == HCI_EVNT_WLAN_UNSOL_DISCONNECT )
+     g_have_connection = 0;
 
+   if ( lEventType == HCI_EVNT_WLAN_UNSOL_DHCP )
+     g_have_ip = 1;
 
-  if ( lEventType == HCI_EVNT_WLAN_UNSOL_DHCP )
-    g_have_ip = 1;
+   // if ( lEventType == HCI_EVENT_CC3000_CAN_SHUT_DOWN )
+   //   cc3000Bitset.set(CC3000BitSet::OkToShutDown);
 
+   // if ( lEventType == HCI_EVNT_WLAN_ASYNC_PING_REPORT )
+   // {
+   //   //PRINT_F("CC3000: Ping report\n\r");
+   //   /*pingReportnum++;
+   //   memcpy(&pingReport, data, length);
+   //   Serial.println("\n");
+   //   */
+   //   Serial.println(F("Event 3 \n"));
+   // }
 
-   //if ( lEventType == HCI_EVENT_CC3000_CAN_SHUT_DOWN )
-   //  cc3000Bitset.set(CC3000BitSet::OkToShutDown);
+   if ( lEventType == HCI_EVNT_BSD_TCP_CLOSE_WAIT )
+     g_socket_open = 0;
 
-
-   if ( lEventType == HCI_EVNT_WLAN_ASYNC_PING_REPORT )
-   {
-     //PRINT_F("CC3000: Ping report\n\r");
-     /*pingReportnum++;
-     memcpy(&pingReport, data, length);
-     Serial.println("\n");
-     */
-     Serial.println(F("Event 3 \n"));
-   }
-
-   if ( lEventType == HCI_EVNT_BSD_TCP_CLOSE_WAIT ) {
-    /* uint8_t socketnum;
-     socketnum = data[0];
-     //PRINT_F("TCP Close wait #"); printDec(socketnum);
-     if (socketnum < MAX_SOCKETS)
-       closed_sockets[socketnum] = true;
-       */
-      g_socket_open = 0;
-     // Serial.println(F("Socket closed"));
-   }
 }
 
 //------------------------------------------------------------------------

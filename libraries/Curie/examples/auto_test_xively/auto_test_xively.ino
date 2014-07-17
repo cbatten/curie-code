@@ -230,7 +230,7 @@ CurieTest tests("test_wifi");
 void setup()
 {
   curie_wifi.begin();
-  curie_wifi.connect(CURIESSID);
+  curie_wifi.connect("curie2014");
 
   tests.auto_begin();
   tests.add( TEST_CASE( test_recv          ) );
