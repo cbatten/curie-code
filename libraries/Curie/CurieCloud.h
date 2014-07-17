@@ -95,7 +95,8 @@ class CurieCloud
   // Setup curie cloud (setup wifi board, lcd, connect to red rover)
 
   void begin( const __FlashStringHelper* feed_id,
-              const __FlashStringHelper* api_key );
+              const __FlashStringHelper* api_key,
+              const char* ssid = "curie2014" );
 
   // Send data to a Xively channel
 

@@ -74,13 +74,14 @@ CurieCloud::CurieCloud()
 //------------------------------------------------------------------------
 
 void CurieCloud::begin( const __FlashStringHelper* feed_id,
-                        const __FlashStringHelper* api_key )
+                        const __FlashStringHelper* api_key,
+                        const char* ssid )
 {
   if ( m_initialized )
     return;
 
   curie_wifi.begin();
-  curie_wifi.connect(CURIESSID);
+  curie_wifi.connect(ssid);
 
   m_feed_id     = feed_id;
   m_api_key     = api_key;

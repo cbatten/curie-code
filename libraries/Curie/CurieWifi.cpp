@@ -131,7 +131,7 @@ uint8_t g_socket_open;     // callback sets to 0 if the socket is closed
 
 void event_callback( long lEventType, char* data, unsigned char length )
 {
-   
+
    if ( lEventType == HCI_EVNT_WLAN_ASYNC_SIMPLE_CONFIG_DONE ){
      //cc3000Bitset.set(CC3000BitSet::IsSmartConfigFinished);
      Serial.println(F("Event 1 \n"));
@@ -144,16 +144,16 @@ void event_callback( long lEventType, char* data, unsigned char length )
       Serial.println(F("Disconnected from internet"));
       g_have_connection = 0;
   }
-     
+
 
   if ( lEventType == HCI_EVNT_WLAN_UNSOL_DHCP )
     g_have_ip = 1;
 
 
    //if ( lEventType == HCI_EVENT_CC3000_CAN_SHUT_DOWN )
-   //  cc3000Bitset.set(CC3000BitSet::OkToShutDown);      
-    
-  
+   //  cc3000Bitset.set(CC3000BitSet::OkToShutDown);
+
+
    if ( lEventType == HCI_EVNT_WLAN_ASYNC_PING_REPORT )
    {
      //PRINT_F("CC3000: Ping report\n\r");
@@ -163,7 +163,7 @@ void event_callback( long lEventType, char* data, unsigned char length )
      */
      Serial.println(F("Event 3 \n"));
    }
-  
+
    if ( lEventType == HCI_EVNT_BSD_TCP_CLOSE_WAIT ) {
     /* uint8_t socketnum;
      socketnum = data[0];
@@ -343,6 +343,9 @@ void CurieWifi::print_mac_addr()
 
 void CurieWifi::connect( const char* ssid )
 {
+  if ( strlen(ssid) != 0 )
+    m_ssid = ssid;
+
   CURIE_WIFI_DEBUG_HEADER("Connect to AP");
 
   // This forces a check of the interrupts. Note sure why we need this?
@@ -366,10 +369,10 @@ void CurieWifi::connect( const char* ssid )
 
   CURIE_WIFI_DEBUG("3. start connect to ");
 
- 
+
   g_have_connection = 0;
   g_have_ip         = 0;
-  int err = wlan_connect(ssid,strlen(ssid));
+  int err = wlan_connect(m_ssid,strlen(m_ssid));
 
   CURIE_WIFI_ASSERT( err == 0, "no connect" );
 
@@ -433,10 +436,10 @@ bool CurieWifi::isSocketOpen(){
 //------------------------------------------------------------------------
 
 CurieWifiClient::CurieWifiClient( uint8_t ip_a, uint8_t ip_b, uint8_t ip_c, uint8_t ip_d )
-{  
+{
     m_rx_buf_sz  = 0;
     m_rx_buf_idx = 0;
-  
+
     createSocket();
 
     CURIE_WIFI_ASSERT( m_socket != -1, "socket create" );
@@ -453,7 +456,7 @@ CurieWifiClient::CurieWifiClient( uint8_t ip_a, uint8_t ip_b, uint8_t ip_c, uint
     socket_addr.sa_data[5] = ip_d;
 
     verifyConnection();
-      
+
     int err = connect( m_socket, &socket_addr, sizeof(socket_addr) );
 
     //Failed in connecting, will restart the wifi module
@@ -462,9 +465,9 @@ CurieWifiClient::CurieWifiClient( uint8_t ip_a, uint8_t ip_b, uint8_t ip_c, uint
         curie_wifi.disconnect();
         curie_wifi.reInit();
         curie_wifi.connect(CURIESSID);
-        err = connect( m_socket, &socket_addr, sizeof(socket_addr) );                
+        err = connect( m_socket, &socket_addr, sizeof(socket_addr) );
     }*/
-  
+
   CURIE_WIFI_ASSERT( err != -1,     "socket conn. " );
   CURIE_WIFI_ASSERT( m_socket >= 0, "socket conn. " );
 }
@@ -474,13 +477,13 @@ CurieWifiClient::CurieWifiClient( uint8_t ip_a, uint8_t ip_b, uint8_t ip_c, uint
 //------------------------------------------------------------------------
 void CurieWifiClient::createSocket(){
     m_socket = socket( AF_INET, SOCK_STREAM, IPPROTO_TCP );
-    //Failed in creating socket, restart wifi module and try again 
+    //Failed in creating socket, restart wifi module and try again
     for(int c = 0; c < 4 && m_socket < 0; ++c){
         //Serial.println(F("Restarting wifi because of socket create"));
         //curie_wifi.begin();
-        //curie_wifi.connect(F(CURIE2014));            
+        //curie_wifi.connect(F(CURIE2014));
         Serial.print(F("Retrying to create socket: Try #")); Serial.println(c);
-        m_socket = socket( AF_INET, SOCK_STREAM, IPPROTO_TCP ); 
+        m_socket = socket( AF_INET, SOCK_STREAM, IPPROTO_TCP );
     }
     if(m_socket >= 0)
       g_socket_open = 1;
@@ -494,14 +497,14 @@ void CurieWifiClient::verifyConnection(){
    //If the socket got closed then recreate it
     if(!curie_wifi.isSocketOpen()){
       Serial.println(" Socket was closed! \n");
-      createSocket();  
+      createSocket();
     }
 
     //If the internet is not connected, try and reconnect
     if(!curie_wifi.isConnected()){
       Serial.println("Lost Internet! \n");
       curie_wifi.disconnect();
-      curie_wifi.connect(CURIESSID);
+      curie_wifi.connect();
     }
 
     //If the socket is still not open or the board is still
@@ -509,7 +512,7 @@ void CurieWifiClient::verifyConnection(){
     if(!curie_wifi.isSocketOpen() || !curie_wifi.isConnected()){
       curie_wifi.disconnect();
       curie_wifi.reInit();
-      curie_wifi.connect(CURIESSID);
+      curie_wifi.connect();
       createSocket();
       CURIE_WIFI_ASSERT(curie_wifi.isSocketOpen(), "socket conn. ");
       CURIE_WIFI_ASSERT(curie_wifi.isConnected(),  "internet conn.");
@@ -532,7 +535,7 @@ void CurieWifiClient::send_request( const String& str )
     tx_buf_idx++;
     if ( tx_buf_idx == CURIE_WIFI_TX_BUF_SIZE ) {
       verifyConnection();
-      int err = send( m_socket, tx_buf, CURIE_WIFI_TX_BUF_SIZE, 0 );           
+      int err = send( m_socket, tx_buf, CURIE_WIFI_TX_BUF_SIZE, 0 );
       CURIE_WIFI_ASSERT( err != -1, "socket send  " );
       tx_buf_idx = 0;
     }
@@ -542,7 +545,7 @@ void CurieWifiClient::send_request( const String& str )
 
   if ( tx_buf_idx > 0 ) {
     verifyConnection();
-    int err = send( m_socket, tx_buf, tx_buf_idx, 0 );    
+    int err = send( m_socket, tx_buf, tx_buf_idx, 0 );
     CURIE_WIFI_ASSERT( err != -1, "socket send  " );
   }
 }
@@ -565,7 +568,7 @@ void CurieWifiClient::send_request( const __FlashStringHelper* str )
     tx_buf_idx++;
     if ( tx_buf_idx == CURIE_WIFI_TX_BUF_SIZE ) {
       verifyConnection();
-      int err = send( m_socket, tx_buf, CURIE_WIFI_TX_BUF_SIZE, 0 );      
+      int err = send( m_socket, tx_buf, CURIE_WIFI_TX_BUF_SIZE, 0 );
       CURIE_WIFI_ASSERT( err != -1, "socket send  " );
       tx_buf_idx = 0;
     }
@@ -575,7 +578,7 @@ void CurieWifiClient::send_request( const __FlashStringHelper* str )
 
   if ( tx_buf_idx > 0 ) {
     verifyConnection();
-    int err = send( m_socket, tx_buf, tx_buf_idx, 0 );    
+    int err = send( m_socket, tx_buf, tx_buf_idx, 0 );
     CURIE_WIFI_ASSERT( err != -1, "socket send  " );
   }
 }
@@ -834,4 +837,3 @@ uint8_t CurieWifiClient::available()
   else
     return 0;  // no data is available
 }
-

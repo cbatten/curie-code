@@ -14,7 +14,7 @@
 
 void test_connect()
 {
-  curie_wifi.connect(CURIESSID);
+  curie_wifi.connect("curie2014");
   TEST_PASS( "Successfully connected" );
 }
 

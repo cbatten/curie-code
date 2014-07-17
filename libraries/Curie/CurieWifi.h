@@ -11,8 +11,6 @@
 #include <Arduino.h>
 #include <stdint.h>
 
-#define CURIESSID "curie2014"
-
 #define CURIE_WIFI_TX_BUF_SIZE 32
 #define CURIE_WIFI_RX_BUF_SIZE 64
 
@@ -37,7 +35,7 @@ class CurieWifi {
 
   // Connect to an open access point
 
-  void connect( const char* ssid );
+  void connect( const char* ssid = "" );
 
   // Display mac address
 
@@ -47,7 +45,7 @@ class CurieWifi {
 
   void disconnect();
 
-  //Checks to see if wifi is still connected  
+  //Checks to see if wifi is still connected
   bool isConnected();
 
   //Checks to see if the socket is open
@@ -55,6 +53,7 @@ class CurieWifi {
 
  private:
 
+  const char* m_ssid;
   bool m_initialized;
 
 };
@@ -115,4 +114,3 @@ class CurieWifiClient {
 extern CurieWifi curie_wifi;
 
 #endif /* CURIE_WIFI_H */
-
