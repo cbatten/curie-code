@@ -86,16 +86,17 @@ class CurieWifiClient {
 
   void print_response();
 
-  // Receive response and verify HTTP status code of 200
-
-  void recv_response();
-
   // Receive just the data and write it into the given buffer
+
+  void recv_header();
 
   void recv_response_data( char* buf, int buf_sz, char delimiter = '\0' );
 
- protected:
+  void recv_response_line( char* name_buf, int name_buf_sz,
+                           char* value_buf, int value_buf_sz,
+                           char delimiter = ',' );
 
+  void    close();
   void    wait();
   char    read();
   uint8_t available();

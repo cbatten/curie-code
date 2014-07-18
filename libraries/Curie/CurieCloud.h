@@ -111,6 +111,11 @@ class CurieCloud
 
   // Receive data from a Xively channel
 
+  void recv_prefetch( const char* name0,
+                      const char* name1 = "",
+                      const char* name2 = "",
+                      const char* name3 = "" );
+
   int recv_int( const char* name );
   float  recv_float( const char* name );
   String recv_str( const char* name );
@@ -122,6 +127,18 @@ class CurieCloud
 
   bool m_initialized;
 
+  const char* m_name0;
+  String m_buf0;
+
+  const char* m_name1;
+  String m_buf1;
+
+  const char* m_name2;
+  String m_buf2;
+
+  const char* m_name3;
+  String m_buf3;
+
 };
 
 // Global instance
@@ -129,4 +146,3 @@ class CurieCloud
 extern CurieCloud curie_cloud;
 
 #endif /* CURIE_CLOUD_H */
-

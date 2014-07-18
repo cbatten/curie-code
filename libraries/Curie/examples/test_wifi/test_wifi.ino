@@ -88,6 +88,49 @@ void test_recv_csl_with_delim()
 }
 
 //------------------------------------------------------------------------
+// test_recv_csl_multiple
+//------------------------------------------------------------------------
+// Test getting data from server line by line.
+
+void test_recv_csl_multiple()
+{
+  CurieWifiClient client( 128,84,224,10 );
+  TEST_PASS( "Successfully connected to server" );
+
+  client.send_request(F(
+    "GET /curie2014/curie-wifi-test2.txt HTTP/1.1\n"
+    "Host: www.csl.cornell.edu\n"
+    "Connection: close\n\n"
+  ));
+  TEST_PASS( "Successfully sent request" );
+
+  client.recv_header();
+
+  TEST_PASS( "Successfully received header" );
+
+  char name_buf[32];
+  char value_buf[32];
+
+  client.recv_response_line( name_buf, 32, value_buf, 32 );
+  TEST_PASS( "Successfully received line 1 of response" );
+  TEST_CHECK( strcmp( name_buf, "test_channel_a" ) == 0 );
+  TEST_CHECK( strcmp( value_buf, "1" ) == 0 );
+
+  client.recv_response_line( name_buf, 32, value_buf, 32 );
+  TEST_PASS( "Successfully received line 2 of response" );
+  TEST_CHECK( strcmp( name_buf, "test_channel_b" ) == 0 );
+  TEST_CHECK( strcmp( value_buf, "2" ) == 0 );
+
+  client.recv_response_line( name_buf, 32, value_buf, 32 );
+  TEST_PASS( "Successfully received line 3 of response" );
+  TEST_CHECK( strcmp( name_buf, "test_channel_c" ) == 0 );
+  TEST_CHECK( strcmp( value_buf, "3" ) == 0 );
+
+  TEST_CHECK( !client.available() );
+  client.close();
+}
+
+//------------------------------------------------------------------------
 // test_disconnect
 //------------------------------------------------------------------------
 // Test disconnecting from access point.
@@ -114,6 +157,7 @@ void setup()
   tests.add( TEST_CASE( test_print_resp          ) );
   tests.add( TEST_CASE( test_recv_csl            ) );
   tests.add( TEST_CASE( test_recv_csl_with_delim ) );
+  tests.add( TEST_CASE( test_recv_csl_multiple   ) );
   tests.add( TEST_CASE( test_disconnect          ) );
 }
 

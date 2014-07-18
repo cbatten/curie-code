@@ -139,7 +139,6 @@ void CurieCloud::send_str( const char* name, const String& value)
   client.send_request(m_api_key);
   client.send_request(F("\nConnection: close\nContent-Length: "));
 
-//Serial.println("Send chunk 1");
   String data;
   data.reserve(32);
   data = name;
@@ -153,7 +152,7 @@ void CurieCloud::send_str( const char* name, const String& value)
   data_len_str += "\n\n";
 
   client.send_request( data_len_str + data );
-//Serial.println("Send chunk 2");
+
   // Wait for the reponse
 
   CURIE_CLOUD_DEBUG("3. wait for resp");
@@ -175,10 +174,83 @@ void CurieCloud::send_multiple(
   const char* name2, const String& value2,
   const char* name3, const String& value3 )
 {
-  CurieCloud::send_str(name0,value0);
-  CurieCloud::send_str(name1,value1);
-  CurieCloud::send_str(name2,value2);
-  CurieCloud::send_str(name3,value3);
+  if ( !m_initialized ) {
+    Serial.println(F("\nERROR: Must call begin on curie_cloud first!"));
+    while (1);
+  }
+
+  CURIE_CLOUD_DEBUG_HEADER("Send to Xively");
+
+  // Connect to Xively
+
+  CURIE_CLOUD_DEBUG("1. connecting");
+
+  CurieWifiClient client( 64,94,18,120 );
+
+  // Send the request
+
+  CURIE_CLOUD_DEBUG("2. send req");
+
+  client.send_request(F("PUT /v2/feeds/"));
+  client.send_request(m_feed_id);
+  client.send_request(F(".csv HTTP/1.1\n"));
+  client.send_request(F("Host: api.xively.edu\nX-ApiKey: "));
+  client.send_request(m_api_key);
+  client.send_request(F("\nConnection: close\nContent-Length: "));
+
+  String data;
+  data.reserve(32);
+
+  // First value
+
+  data = name0;
+  data += ",";
+  data += value0;
+  data += "\n";
+
+  // Second value
+
+  if ( strlen(name1) != 0 ) {
+    data += name1;
+    data += ",";
+    data += value1;
+    data += "\n";
+  }
+
+  // Third value
+
+  if ( strlen(name2) != 0 ) {
+    data += name2;
+    data += ",";
+    data += value2;
+    data += "\n";
+  }
+
+  // Fourth value
+
+  if ( strlen(name3) != 0 ) {
+    data += name3;
+    data += ",";
+    data += value3;
+    data += "\n";
+  }
+
+  String data_len_str;
+  data_len_str.reserve(5);
+  data_len_str = String(data.length());
+  data_len_str += "\n\n";
+
+  client.send_request( data_len_str + data );
+
+  // Wait for the reponse
+
+  CURIE_CLOUD_DEBUG("3. wait for resp");
+
+  client.print_response();
+
+  // Success!
+
+  CURIE_CLOUD_DEBUG("Done!");
 }
 
 //------------------------------------------------------------------------
@@ -196,10 +268,86 @@ int CurieCloud::recv_int( const char* name)
 
 float CurieCloud::recv_float( const char* name )
 {
-    String val = CurieCloud::recv_str(name);
-    char buf[32];
-    val.toCharArray(buf,32); 
-    return atof(buf);
+  String val = CurieCloud::recv_str(name);
+  char buf[32];
+  val.toCharArray(buf,32);
+  return atof(buf);
+}
+
+//------------------------------------------------------------------------
+// CurieCloud::recv_prefetch
+//------------------------------------------------------------------------
+
+void CurieCloud::recv_prefetch( const char* name0,
+                                const char* name1,
+                                const char* name2,
+                                const char* name3 )
+{
+  if ( !m_initialized ) {
+    Serial.println(F("\nERROR: Must call begin on curie_cloud first!"));
+    while (1);
+  }
+
+  m_name0 = name0;
+  m_name1 = name1;
+  m_name2 = name2;
+  m_name3 = name3;
+
+  CURIE_CLOUD_DEBUG_HEADER("Receive prefetch from Xively");
+
+  // Connect to Xively
+
+  CURIE_CLOUD_DEBUG("1. connecting");
+
+  CurieWifiClient client( 64,94,18,120 );
+
+  // Send the request
+
+  CURIE_CLOUD_DEBUG("2. send req");
+
+  client.send_request(F("GET /v2/feeds/"));
+  client.send_request(m_feed_id);
+  client.send_request(F(".csv HTTP/1.1\n"));
+  client.send_request(F("Host: api.xively.edu\nX-ApiKey: "));
+  client.send_request(m_api_key);
+  client.send_request(F("\nConnection: close\n\n"));
+
+  // Wait for the reponse
+
+  CURIE_CLOUD_DEBUG("3. wait for resp");
+
+  client.recv_header();
+
+  while ( client.available() ) {
+
+    char name_buf[32];
+    char value_buf[32];
+
+    client.recv_response_line( name_buf, 32, value_buf, 32 );
+
+    if ( strcmp( name_buf, name0 ) == 0 ) {
+      m_buf0 = String(value_buf);
+    }
+
+    else if ( strcmp( name_buf, name1 ) == 0 ) {
+      m_buf1 = String(value_buf);
+    }
+
+    else if ( strcmp( name_buf, name2 ) == 0 ) {
+      m_buf2 = String(value_buf);
+    }
+
+    else if ( strcmp( name_buf, name3 ) == 0 ) {
+      m_buf3 = String(value_buf);
+    }
+
+  }
+
+  client.close();
+
+  // Success!
+
+  CURIE_CLOUD_DEBUG("Done!");
 }
 
 //------------------------------------------------------------------------
@@ -211,6 +359,26 @@ String CurieCloud::recv_str( const char* name )
   if ( !m_initialized ) {
     Serial.println(F("\nERROR: Must call begin on curie_cloud first!"));
     while (1);
+  }
+
+  if ( strcmp( name, m_name0 ) == 0 ) {
+    m_name0 = "";
+    return m_buf0;
+  }
+
+  else if ( strcmp( name, m_name1 ) == 0 ) {
+    m_name1 = "";
+    return m_buf1;
+  }
+
+  else if ( strcmp( name, m_name2 ) == 0 ) {
+    m_name2 = "";
+    return m_buf2;
+  }
+
+  else if ( strcmp( name, m_name3 ) == 0 ) {
+    m_name3 = "";
+    return m_buf3;
   }
 
   CURIE_CLOUD_DEBUG_HEADER("Receive from Xively");

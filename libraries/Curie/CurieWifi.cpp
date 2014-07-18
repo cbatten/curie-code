@@ -355,8 +355,7 @@ void CurieWifi::connect( const char* ssid )
   // when the connection is established, and that callback will set the
   // g_have_connection and g_have_ip variables.
 
-  CURIE_WIFI_DEBUG("3. start connect to ");
-
+  CURIE_WIFI_DEBUG("3. start connect");
 
   g_have_connection = 0;
   g_have_ip         = 0;
@@ -392,7 +391,6 @@ void CurieWifi::connect( const char* ssid )
   CURIE_WIFI_DEBUG("Connected!");
 }
 
-
 //------------------------------------------------------------------------
 // CurieWifi::disconnect
 //------------------------------------------------------------------------
@@ -425,86 +423,107 @@ bool CurieWifi::isSocketOpen(){
 
 CurieWifiClient::CurieWifiClient( uint8_t ip_a, uint8_t ip_b, uint8_t ip_c, uint8_t ip_d )
 {
-    m_rx_buf_sz  = 0;
-    m_rx_buf_idx = 0;
+  m_rx_buf_sz  = 0;
+  m_rx_buf_idx = 0;
 
-    createSocket();
+  createSocket();
 
-    CURIE_WIFI_ASSERT( m_socket != -1, "socket create" );
+  CURIE_WIFI_ASSERT( m_socket != -1, "socket create" );
 
-    sockaddr socket_addr;
-    uint16_t dest_port = 80;
-    memset( &socket_addr, 0x00, sizeof(socket_addr) );
-    socket_addr.sa_family = AF_INET;
-    socket_addr.sa_data[0] = (dest_port & 0xFF00) >> 8; // port num
-    socket_addr.sa_data[1] = (dest_port & 0x00FF);
-    socket_addr.sa_data[2] = ip_a;
-    socket_addr.sa_data[3] = ip_b;
-    socket_addr.sa_data[4] = ip_c;
-    socket_addr.sa_data[5] = ip_d;
+  sockaddr socket_addr;
+  uint16_t dest_port = 80;
+  memset( &socket_addr, 0x00, sizeof(socket_addr) );
+  socket_addr.sa_family = AF_INET;
+  socket_addr.sa_data[0] = (dest_port & 0xFF00) >> 8; // port num
+  socket_addr.sa_data[1] = (dest_port & 0x00FF);
+  socket_addr.sa_data[2] = ip_a;
+  socket_addr.sa_data[3] = ip_b;
+  socket_addr.sa_data[4] = ip_c;
+  socket_addr.sa_data[5] = ip_d;
 
-    verifyConnection();
+  verifyConnection();
 
+  int  count = 0;
+  bool retry = true;
+  while ( (count < 5) && retry ) {
     int err = connect( m_socket, &socket_addr, sizeof(socket_addr) );
+    if ( err != -1 ) {
+      retry = false;
+    }
+    else {
+      CURIE_WIFI_DEBUG("Could not connect, retrying ...");
+      closesocket( m_socket );
+      count++;
+    }
+  }
 
-    //Failed in connecting, will restart the wifi module
-    /*for(int c = 0; c < 4 && err == -1; ++c){
-        Serial.println(F("Restarting wifi, failed to connect"));
-        curie_wifi.disconnect();
-        curie_wifi.reInit();
-        curie_wifi.connect(CURIESSID);
-        err = connect( m_socket, &socket_addr, sizeof(socket_addr) );
-    }*/
+  // Failed in connecting, will restart the wifi module
+  /* for(int c = 0; c < 4 && err == -1; ++c){
+     Serial.println(F("Restarting wifi, failed to connect"));
+     curie_wifi.disconnect();
+     curie_wifi.reInit();
+     curie_wifi.connect(CURIESSID);
+     err = connect( m_socket, &socket_addr, sizeof(socket_addr) );
+     }*/
 
-  CURIE_WIFI_ASSERT( err != -1,     "socket conn. " );
-  CURIE_WIFI_ASSERT( m_socket >= 0, "socket conn. " );
+  CURIE_WIFI_ASSERT( !retry,        "socket conn.a" );
+  CURIE_WIFI_ASSERT( m_socket >= 0, "socket conn.b" );
 }
 
 //------------------------------------------------------------------------
 // CurieWifiClient::createSocket
 //------------------------------------------------------------------------
+
 void CurieWifiClient::createSocket(){
+
+  m_socket = socket( AF_INET, SOCK_STREAM, IPPROTO_TCP );
+
+  // Failed in creating socket, restart wifi module and try again
+
+  for ( int c = 0; c < 4 && m_socket < 0; ++c ) {
+    //Serial.println(F("Restarting wifi because of socket create"));
+    //curie_wifi.begin();
+    //curie_wifi.connect(F(CURIE2014));
+    Serial.print(F("Retrying to create socket: Try #"));
+    Serial.println(c);
     m_socket = socket( AF_INET, SOCK_STREAM, IPPROTO_TCP );
-    //Failed in creating socket, restart wifi module and try again
-    for(int c = 0; c < 4 && m_socket < 0; ++c){
-        //Serial.println(F("Restarting wifi because of socket create"));
-        //curie_wifi.begin();
-        //curie_wifi.connect(F(CURIE2014));
-        Serial.print(F("Retrying to create socket: Try #")); Serial.println(c);
-        m_socket = socket( AF_INET, SOCK_STREAM, IPPROTO_TCP );
-    }
-    if(m_socket >= 0)
-      g_socket_open = 1;
+  }
+  if ( m_socket >= 0 )
+    g_socket_open = 1;
 }
 
 
 //------------------------------------------------------------------------
 // CurieWifiClient::verifyConnection
 //------------------------------------------------------------------------
+
 void CurieWifiClient::verifyConnection(){
-   //If the socket got closed then recreate it
-    if(!curie_wifi.isSocketOpen()){
-      Serial.println(" Socket was closed! \n");
-      createSocket();
-    }
 
-    //If the internet is not connected, try and reconnect
-    if(!curie_wifi.isConnected()){
-      Serial.println("Lost Internet! \n");
-      curie_wifi.disconnect();
-      curie_wifi.connect();
-    }
+  // If the socket got closed then recreate it
 
-    //If the socket is still not open or the board is still
-    //not connected then restart the wifi board
-    if(!curie_wifi.isSocketOpen() || !curie_wifi.isConnected()){
-      curie_wifi.disconnect();
-      curie_wifi.reInit();
-      curie_wifi.connect();
-      createSocket();
-      CURIE_WIFI_ASSERT(curie_wifi.isSocketOpen(), "socket conn. ");
-      CURIE_WIFI_ASSERT(curie_wifi.isConnected(),  "internet conn.");
-    }
+  if ( !curie_wifi.isSocketOpen() ) {
+    Serial.println("Socket was closed! \n");
+    createSocket();
+  }
+
+  // If the internet is not connected, try and reconnect
+  if ( !curie_wifi.isConnected() ) {
+    Serial.println("Lost Internet! \n");
+    curie_wifi.disconnect();
+    curie_wifi.connect();
+  }
+
+  // If the socket is still not open or the board is still
+  // not connected then restart the wifi board
+
+  if ( !curie_wifi.isSocketOpen() || !curie_wifi.isConnected() ) {
+    curie_wifi.disconnect();
+    curie_wifi.reInit();
+    curie_wifi.connect();
+    createSocket();
+    CURIE_WIFI_ASSERT( curie_wifi.isSocketOpen(), "socket conn.1"  );
+    CURIE_WIFI_ASSERT( curie_wifi.isConnected(),  "internet conn." );
+  }
 }
 
 //------------------------------------------------------------------------
@@ -582,17 +601,8 @@ void CurieWifiClient::print_response()
   while ( available() )
     Serial.print(read());
   closesocket( m_socket );
-  //Waits until the socket is closed before proceeding
-  while(g_socket_open);
-}
-
-//------------------------------------------------------------------------
-// CurieWifiClient::recv_response
-//------------------------------------------------------------------------
-
-void CurieWifiClient::recv_response()
-{
-  recv_response_data( 0, 0 );
+  // Waits until the socket is closed before proceeding
+  // while ( g_socket_open );
 }
 
 //------------------------------------------------------------------------
@@ -607,8 +617,17 @@ void CurieWifiClient::recv_response()
 
 void CurieWifiClient::recv_response_data( char* buf, int buf_sz, char delim )
 {
-  int8_t buf_idx = 0;
+  recv_header();
+  recv_response_line( 0, 0, buf, buf_sz, delim );
+  close();
+}
 
+//------------------------------------------------------------------------
+// CurieWifiClient::recv_header
+//------------------------------------------------------------------------
+
+void CurieWifiClient::recv_header()
+{
   // Before we do anything, wait to get at least some data
 
   wait();
@@ -620,26 +639,18 @@ void CurieWifiClient::recv_response_data( char* buf, int buf_sz, char delim )
   char   header_str[13];
   header_str[12] = '\0';
 
-  // Clear the return buffer. This also ensures the returned string
-  // terminates with a null character.
-
-  if ( buf != 0 )
-    memset( buf, 0, buf_sz );
-
   // Here are the variables we will use to track what state we are in
 
   const int8_t STATE_CHECK_HEADER        = 0;
   const int8_t STATE_FIND_FIRST_NEWLINE  = 1;
   const int8_t STATE_FIND_SECOND_NEWLINE = 2;
   const int8_t STATE_EAT_CHAR            = 3;
-  const int8_t STATE_FIND_DELIM          = 4;
-  const int8_t STATE_COPY_TO_BUFFER      = 5;
-  const int8_t STATE_DONE                = 6;
 
   int8_t state = STATE_CHECK_HEADER;
 
+  bool done   = false;
   bool failed = true;
-  while ( available() ) {
+  while ( available() && !done ) {
     char c = read();
 
     // FIND_CHECK_HEADER: Copy first 12 characters to check that this
@@ -659,21 +670,9 @@ void CurieWifiClient::recv_response_data( char* buf, int buf_sz, char delim )
 
         failed = false;
         state = STATE_FIND_FIRST_NEWLINE;
-
-        // If the output buffer is zero then we just wanted to check the
-        // HTTP status code anywas so we just break out of the state
-        // machine
-
-        if ( buf == 0 )
-          break;
       }
       else
         header_str[header_str_idx++] = c;
-    }
-
-    else if ( state == STATE_FIND_FIRST_NEWLINE ) {
-      if ( c == '\n' )
-        state = STATE_FIND_SECOND_NEWLINE;
     }
 
     // FIND_FIRST_NEWLINE: Wait until we see a newline character
@@ -697,37 +696,10 @@ void CurieWifiClient::recv_response_data( char* buf, int buf_sz, char delim )
         state = STATE_FIND_FIRST_NEWLINE;
     }
 
-    // EAT_CHAR: Basically just eat one character. If the delim character
-    // is the null character then we want to capture the entire line so
-    // we skip right to the COPY_TO_BUFFER state. Otherwise we move into
-    // the FIND_DELIM state.
+    // EAT_CHAR: Basically just eat one character.
 
     else if ( state == STATE_EAT_CHAR ) {
-      if ( delim == '\0' )
-        state = STATE_COPY_TO_BUFFER;
-      else
-        state = STATE_FIND_DELIM;
-    }
-
-    // FIND_DELIM: Wait until we see the delim character then move into
-    // the COPY_TO_BUFFER state.
-
-    else if ( state == STATE_FIND_DELIM ) {
-      if ( c == delim )
-        state = STATE_COPY_TO_BUFFER;
-    }
-
-    // COPY_TO_BUFFER: Copy each character to the output buffer until we
-    // see a newline or we run out of room in the output buffer.
-
-    else if ( state == STATE_COPY_TO_BUFFER ) {
-      if ( c == '\n' )
-        state = STATE_DONE;
-      else
-        buf[buf_idx++] = c;
-
-      if ( buf_idx == (buf_sz-1) )
-        state = STATE_DONE;
+      done = true;
     }
 
   }
@@ -739,6 +711,87 @@ void CurieWifiClient::recv_response_data( char* buf, int buf_sz, char delim )
     while (1);
   }
 
+}
+
+//------------------------------------------------------------------------
+// CurieWifiClient::recv_response_value
+//------------------------------------------------------------------------
+
+void CurieWifiClient::recv_response_line
+(
+  char* name_buf,
+  int   name_buf_sz,
+  char* value_buf,
+  int   value_buf_sz,
+  char  delim
+){
+  // Clear the return buffer. This also ensures the returned string
+  // terminates with a null character.
+
+  if ( name_buf != 0 )
+    memset( name_buf, 0, name_buf_sz );
+
+  if ( value_buf != 0 )
+    memset( value_buf, 0, value_buf_sz );
+
+  // Here are the variables we will use to track what state we are in
+
+  const int8_t STATE_FIND_DELIM1         = 0;
+  const int8_t STATE_FIND_DELIM2         = 1;
+  const int8_t STATE_COPY_TO_BUFFER      = 2;
+
+  int8_t state = STATE_FIND_DELIM1;
+  if ( name_buf == 0 )
+    state = STATE_FIND_DELIM2;
+  if ( delim == '\0' )
+    state = STATE_COPY_TO_BUFFER;
+
+  int8_t name_buf_idx  = 0;
+  int8_t value_buf_idx = 0;
+
+  bool done   = false;
+  bool failed = true;
+  while ( available() && !done ) {
+    char c = read();
+
+    // FIND_DELIM1: Copy to name buffer and wait until we see delim.
+
+    if ( state == STATE_FIND_DELIM1 ) {
+      if ( c == ',' )
+        state = STATE_FIND_DELIM2;
+      else
+        name_buf[name_buf_idx++] = c;
+
+      if ( name_buf_idx == (name_buf_sz-1) )
+        done = true;
+    }
+
+    // FIND_DELIM: Wait until we see the delim character then go back to
+    // copying into value buffer.
+
+    else if ( state == STATE_FIND_DELIM2 ) {
+      if ( c == ',' )
+        state = STATE_COPY_TO_BUFFER;
+    }
+
+    // COPY_TO_BUFFER: Copy each character to the output buffer until we
+    // see a newline or we run out of room in the output buffer.
+
+    else if ( state == STATE_COPY_TO_BUFFER ) {
+      if ( c == '\n' )
+        done = true;
+      else
+        value_buf[value_buf_idx++] = c;
+
+      if ( value_buf_idx == (value_buf_sz-1) )
+        done = true;
+    }
+
+  }
+}
+
+void CurieWifiClient::close()
+{
   closesocket( m_socket );
 }
 
