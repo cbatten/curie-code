@@ -757,7 +757,7 @@ void CurieWifiClient::recv_response_line
     // FIND_DELIM1: Copy to name buffer and wait until we see delim.
 
     if ( state == STATE_FIND_DELIM1 ) {
-      if ( c == ',' )
+      if ( c == delim )
         state = STATE_FIND_DELIM2;
       else
         name_buf[name_buf_idx++] = c;
@@ -770,7 +770,7 @@ void CurieWifiClient::recv_response_line
     // copying into value buffer.
 
     else if ( state == STATE_FIND_DELIM2 ) {
-      if ( c == ',' )
+      if ( c == delim )
         state = STATE_COPY_TO_BUFFER;
     }
 
